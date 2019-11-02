@@ -1,0 +1,10 @@
+1. In folderul respectiv (disertatie) prima comanda: git init
+2. git remote add origin https://github.com/popaCarmen/disertatie.git
+3. git pull -u origin master -> iau schimbarile de pe branch
+4. modific fisier
+5. git add . -> adaug toate fisierele
+6. git commit -m "comment"
+7. git push -u origin master
+
+pt stergere sau adaugare fisierele de pe git
+delete din calculator -> git add . -> commit -> push
