@@ -8,3 +8,4 @@
 
 pt stergere sau adaugare fisierele de pe git
 delete din calculator -> git add . -> commit -> push
+
