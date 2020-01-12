@@ -1,0 +1,45 @@
+Robofun 
+ - Kit de baza Raspberry Pi4: Raspberry, alimentator, card 16GB, carcasa: 353lei
+https://ardushop.ro/ro/home/1274-kit-de-baza-raspberry-pi4.html?search_query=raspberry+pi&results=47
+ - Kit raspberry pi 4b functionale: raspberry, alimentator, card 16GB: 328.50 lei
+https://ardushop.ro/ro/home/1275-kit-raspberry-pi-4b-functional.html?search_query=raspberry+pi&results=47
++ cablu HDMI to microHDMI: ??
+ - camera raspberry pi: 169
+https://www.robofun.ro/raspberry-pi-si-componente/camera/camera-video-raspberry-pi-versiunea-2
+ - suport camera: 27 lei  
+https://www.robofun.ro/raspberry-pi-si-componente/camera/carcasa-curcubeu-camera-raspberry-pi
+- cablu camera 30cm : 13 
+https://www.robofun.ro/raspberry-pi-si-componente/camera/cablu-pentru-camera-raspberry-pi-200mm
+TOTAL: 353+169+27+13 = 562 lei - fara cablu HDMI
+TOTAL raspberry: 353 + 50 cablu = 403 lei
+
+Optimus digital:
+ - kit plusivo pi super starter: raspberry pi4, alimentator, card 16 gb, cablu hdmi + alte componente baza: 399lei
+https://www.optimusdigital.ro/ro/kituri/9555-kit-plusivo-pi-4-super-starter-cu-raspberry-pi-4-cu-2-gb-ram-si-card-noobs-de-16-gb.html
++ camera raspberry pi: 157.99 lei
+https://www.optimusdigital.ro/ro/camere/1352-camera-module-v2.html?search_query=camera+raspberry+pi&results=37
++ cablu camera 50cm: 15 lei
+https://www.optimusdigital.ro/ro/cabluri-alte-cabluri/1502-cablu-camera-pentru-raspberry-pi-50cm.html?search_query=camera+raspberry+pi&results=37
++ suport camera: 15 lei
+https://www.optimusdigital.ro/ro/accesorii/1455-suport-camera-pentru-raspberry-pi.html?search_query=camera+raspberry+pi&results=37
++ carcasa Raspberry pi: 30 lei
+https://www.optimusdigital.ro/ro/carcase/10439-carcasa-multicolora-pentru-raspberry-pi-4.html?search_query=carcasa+raspberry+pi&results=77
+TOTAL: 399 + 157.99 + 15 +15 +30 = 616.99 
+TOTAL raspberry: 399 + 30 carcasa = 430 lei 
+
+Cleste.ro
+- raspberry pi model 4: 228 lei
+https://cleste.ro/raspberry-pi-4-model-b-2gb.html
+- alimentator: 65 lei
+https://cleste.ro/sursa-alimentare-raspberry-pi-4.html
+- cablu microHDMI la HDMI: 50 lei
+https://cleste.ro/cablu-micro-hdmi-la-hdmi-1m.html
+- card memorie: ? 
+- camera raspberry pi: 186 lei
+https://cleste.ro/camera-raspberry-pi-noir-v2.html
+- cablu camera 15cm : 9 lei
+ https://cleste.ro/cablu-camera-raspberry-pi-15cm.html
+- suport camera:? 
++carcasa Raspberry pi:  ? 
+TOTAL: 228 + 65 + 50 + 186 + 9 = 538 - fara card memorie, suport camera si carcasa raspberry
+TOTAL Raspberry:  228 + 65 + 50 + 20 (card memorie) + 30 carcasa =  393 lei
