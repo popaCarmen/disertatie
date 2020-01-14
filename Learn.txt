@@ -6,4 +6,9 @@ If input is an image and the output is a description or information, the process
 If input is a description or code and the output is an image, the process is COMPUTER GRAPHICS.
 If input is a description or code and the output is a description or information, the process is ARTIFICIAL INTELLIGENCE.
 
-THRESHOLDING
+
+Connect Arduino with Raspberry Pi
+ - using serial GPIO 
+	- https://oscarliang.com/raspberry-pi-and-arduino-connected-serial-gpio/
+ - using serial USB cable
+	- https://oscarliang.com/connect-raspberry-pi-and-arduino-usb-cable/
