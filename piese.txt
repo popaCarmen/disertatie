@@ -43,3 +43,11 @@ https://cleste.ro/camera-raspberry-pi-noir-v2.html
 +carcasa Raspberry pi:  ? 
 TOTAL: 228 + 65 + 50 + 186 + 9 = 538 - fara card memorie, suport camera si carcasa raspberry
 TOTAL Raspberry:  228 + 65 + 50 + 20 (card memorie) + 30 carcasa =  393 lei
+
+
+
+LIDAR SENSOR
+Amazon: 150 lei
+https://www.amazon.co.uk/MakerFun-Single-Point-Distance-Compatible-Raspberry/dp/B07JJSTVV3/ref=sr_1_2?keywords=tfmini+lidar&qid=1581838994&sr=8-2 
+Robofun: 330 lei
+https://www.robofun.ro/infrarosu/tfmini-micro-lidar-module.html

@@ -1,0 +1,4 @@
+https://lidarscanner.wordpress.com/ -> minilidar with arduino
+https://www.dfrobot.com/blog-1016.html -> minilidar explanation
+https://create.arduino.cc/projecthub/Abhinav_Abhi/arduino-lidar-917404 -> different lidar sensor
+https://github.com/Vishnuparammal/3D_mapping -> lidar mapping 
