@@ -1,54 +1,38 @@
-/*
-  Software serial multple serial test
-
- Receives from the hardware serial, sends to software serial.
- Receives from software serial, sends to hardware serial.
-
- The circuit:
- * RX is digital pin 2 (connect to TX of other device)
- * TX is digital pin 3 (connect to RX of other device)
-
- Note:
- Not all pins on the Mega and Mega 2560 support change interrupts,
- so only the following can be used for RX:
- 10, 11, 12, 13, 50, 51, 52, 53, 62, 63, 64, 65, 66, 67, 68, 69
-
- Not all pins on the Leonardo support change interrupts,
- so only the following can be used for RX:
- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
-
- created back in the mists of time
- modified 25 May 2012
- by Tom Igoe
- based on Mikal Hart's example
-
- This example code is in the public domain.
-
- */
+//#include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2, 3); // RX, TX
 
-void setup()
-{
-  // Open serial communications and wait for port to open:
-  Serial.begin(115200);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Native USB only
-  }
+//AltSoftSerial altSerial; //9 - Tx; 8 - Rx
+SoftwareSerial altSerial(8, 9);
 
 
-  Serial.println("Goodnight moon!");
+void setup() {
+  Serial.begin(9600);
+  Serial.print("AltSoftSerial Test Begin");
+  Serial.println(10);
+  altSerial.begin(9600);
+  altSerial.println("Hello World");
 
-  // set the data rate for the SoftwareSerial port
-  mySerial.begin(38400);
-  mySerial.println("Hello, world?");
 }
 
-void loop() // run over and over
-{
-  if (mySerial.available())
-    Serial.write(mySerial.read());
-  if (Serial.available())
-    mySerial.write(Serial.read());
+void loop() {
+  char c;
+
+  altSerial.write("100");
+  if (Serial.available()) {
+    c = Serial.read();
+    Serial.println(c);
+    Serial.println("Ar fi trebuit sa fie aici");
+  }
+
+  if (altSerial.available()) {
+    c = altSerial.read();
+    Serial.print(c);
+    Serial.println("Dar de fapt e aici");
+  }
+
+//   if (altSerial.available())
+//    Serial.write(altSerial.read());
+//  if (Serial.available())
+//    altSerial.write(Serial.read());
 }
