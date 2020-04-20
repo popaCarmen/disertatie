@@ -1,20 +1,20 @@
 #include <SoftwareSerial.h>  //header file of software serial port
 
 //Lidar sensor
-#define TF_mini_RX   8
-#define TF_mini_TX   9
+#define TF_mini_RX   6
+#define TF_mini_TX   7
 
 #define supply_5V    13
 
 //Robot motors
 //Motor A
-#define enA          3
+#define enA          A1
 #define in1          2
-#define in2          4
+#define in2          3
 //Motor B
-#define enB          6
-#define in3          5
-#define in4          7
+#define enB          A0
+#define in3          4
+#define in4          5
 
 
 
