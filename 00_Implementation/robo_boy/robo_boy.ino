@@ -4,6 +4,8 @@
 #define TF_mini_RX   8
 #define TF_mini_TX   9
 
+#define supply_5V    13
+
 //Robot motors
 //Motor A
 #define enA          3
@@ -13,6 +15,8 @@
 #define enB          6
 #define in3          5
 #define in4          7
+
+
 
 
 SoftwareSerial Serial1(TF_mini_RX, TF_mini_TX); //define software serial port name
@@ -36,6 +40,8 @@ void setup() {
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
 
+  pinMode(supply_5V, OUTPUT);
+
   // Turn off motors - Initial state
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
@@ -47,6 +53,8 @@ void setup() {
 
   analogWrite(enA, 130);
   analogWrite(enB, 130);
+
+  digitalWrite(supply_5V, HIGH);
 }
 
 void loop() {
