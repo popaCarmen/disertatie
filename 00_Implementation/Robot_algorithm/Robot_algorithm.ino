@@ -1,10 +1,9 @@
 #include <SoftwareSerial.h>  //header file of software serial port
+#include <Servo.h>
 
 //Lidar sensor
 #define TF_mini_RX   6
 #define TF_mini_TX   7
-
-#define supply_5V    13
 
 //Robot motors
 //Motor A
@@ -15,22 +14,26 @@
 #define enB          A0
 #define in3          4
 #define in4          5
+//Horizontal servo
+#define X_Serv       8 // ToDO: search a PWM pin for the servo-motor
 
-
-
+Servo horizontal_Servo; //define servo for horizontal movement
 
 SoftwareSerial Serial1(TF_mini_RX, TF_mini_TX); //define software serial port name
 
 int lidar_dist; //actual lidar_distance measurements of LiDAR
+int lastLidar_dist = 0; //variable used to determine if the distance is different from the previous value
 int strength; //signal strength of LiDAR
 int check;  //save check value
 int i;
 int uart[9];  //save data measured by LiDAR
 const int HEADER = 0x59; //frame header of data package
 
-int pwm_speed = 100;
-int Lidar_distance;
-int distanceRight, distanceLeft;
+int minPosServo = 0; //minimum servo position in degrees
+int maxPosServo = 180; //maximum servo position in degrees
+int lastPosServo = 0; // variable used for determining if the servo position is different from the previous one
+int posServo = (maxPosServo + minPosServo) / 2;
+
 void setup() {
   // Set all the motor control pins to outputs
   pinMode(enA, OUTPUT);
@@ -48,17 +51,25 @@ void setup() {
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
 
+  horizontal_Servo.attach(X_Serv);
+
   Serial.begin(9600); //set bit rate of serial port connecting Arduino with computer
   Serial1.begin(115200);  //set bit rate of serial port connecting LiDAR with Arduino
 
   analogWrite(enA, 130);
   analogWrite(enB, 130);
 
-  digitalWrite(supply_5V, HIGH);
+  horizontal_Servo.write(posServo); //initial position
+
 }
 
 void loop() {
 
+
+}
+
+void Lidar_reading()
+{
  if (Serial1.available()) {  //check if serial port has data input
     if (Serial1.read() == HEADER) { //assess data package frame header 0x59
       uart[0] = HEADER;
@@ -81,4 +92,5 @@ void loop() {
       }
     }
   }
+}
 }
