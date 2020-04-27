@@ -6,7 +6,7 @@
 
 #include <SoftwareSerial.h>  //header file of software serial port
 
-SoftwareSerial Serial1(10,11); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
+SoftwareSerial Serial1(6,7); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
 
 /* For Arduinoboards with multiple serial ports like DUEboard, interpret above two pieces of code and directly use Serial1 serial port*/
 

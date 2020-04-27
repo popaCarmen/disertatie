@@ -2,7 +2,7 @@
 
 #define Tx 8
 #define Rx 9
-SoftwareSerial Serial1(8, 9); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
+SoftwareSerial Serial1(Tx, Rx); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
 
 
 //int a1 = 0;
@@ -12,7 +12,7 @@ int val = 0;
 void setup()
 {
   Serial.begin(9600);
-  Serial1.begin(19200);
+  Serial1.begin(9600);
 
   Serial.println("Start");
 }
@@ -31,6 +31,10 @@ void loop()
       Serial1.print(1000);
       val = 0; 
       Serial.println("Message has been sent");
+    }
+    else
+    {
+      Serial1.print(2000);
     }
 //    else if (val == 20)
 //    {
