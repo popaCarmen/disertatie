@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h> //header file of software serial port
+#include <AltSoftSerial.h> // header file of software serial port for pin 8 and 9 - bluetooth device\
 
 #define Tx_Lidar      7
 #define Rx_Lidar      6
@@ -7,7 +8,8 @@
 #define Tx_Bluethooth     9
 
 SoftwareSerial Serial_Lidar(Rx_Lidar, Tx_Lidar); //define software serial port name as Serial_Lidar and define pin 6 as RX and pin 7 as TX
-SoftwareSerial Serial_Bluetooth(Rx_Bluethooth, Tx_Bluethooth); //define software serial port name as Serial_Bluetooth and define pin 8 as RX and pin 9 as TX
+//SoftwareSerial Serial_Bluetooth(Rx_Bluethooth, Tx_Bluethooth); //define software serial port name as Serial_Bluetooth and define pin 8 as RX and pin 9 as TX
+AltSoftSerial Serial_Bluetooth;
 
 int dist;     //actual distance measurements of LiDAR
 int strength; //signal strength of LiDAR
@@ -15,6 +17,9 @@ int check;    //save check value
 int i;
 int uart[9];             //save data measured by LiDAR
 const int HEADER = 0x59; //frame header of data package
+
+
+int value = 100;
 
 void setup()
 {
@@ -28,12 +33,14 @@ void setup()
 void loop()
 {
   Lidar_reading();
-  if(Serial_Bluetooth.available() > 0)
-  {
-    Serial_Bluetooth.print(dist);
-    Serial.println("Message has been sent to Matlab");
+//  if(Serial_Bluetooth.available() > 0)
+//  {
+delay(1000);
+   Serial_Bluetooth.print(value);
+   // Serial_Bluetooth.print(0);
+    //Serial.println("Message has been sent to Matlab");
     //ToDo: Test if Arduino can send messages as string to Matlab. 
-  }
+//  }
 }
 
 void Lidar_reading(void)
