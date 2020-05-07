@@ -1,0 +1,22 @@
+Capitolul 1: 
+- concepte generale
+- stadiu actual
+- scopul 
+- obiectivele
+- structura pe capitole
+Capitolul 2:
+- studiu bibliografic
+- metode
+Capitolul 3:
+- componente si structura: prezentarea generale, elemente componente(fiecare componenta explicata in parte), arhitectura aplicatiei
+Capitolul 4:
+- implementarea SW
+- diagrama uml
+- rez experimente
+Capitolul 5:
+- concluzii 
+- dezvoltari ulterioare
+Capitolul 6:
+- Bibliografie
+
+

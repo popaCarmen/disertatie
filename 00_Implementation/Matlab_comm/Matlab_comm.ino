@@ -16,6 +16,8 @@ int i;
 int uart[9];             //save data measured by LiDAR
 const int HEADER = 0x59; //frame header of data package
 
+char received_data;
+
 void setup()
 {
   Serial.begin(9600);    //set bit rate of serial port connecting Arduino with computer
@@ -28,10 +30,15 @@ void setup()
 void loop()
 {
   Lidar_reading();
-  if(Serial_Bluetooth.available() > 0)
+  if(Serial_Bluetooth.available())
   {
-    Serial_Bluetooth.print(dist);
-    Serial.println("Message has been sent to Matlab");
+    received_data = Serial_Bluetooth.read();
+    if (received_data == 'S')
+    {
+      Serial_Bluetooth.print(dist);
+      Serial.println("Message has been sent to Matlab");
+    }
+    
     //ToDo: Test if Arduino can send messages as string to Matlab. 
   }
 }
