@@ -8,13 +8,13 @@
 
 //Robot motors
 //Motor A
-#define enA A1
+#define enA 3
 #define in1 2
-#define in2 3
+#define in2 A1
 //Motor B
-#define enB A0
+#define enB 5
 #define in3 4
-#define in4 5
+#define in4 A0
 SoftwareSerial Serial_Lidar(Rx_Lidar, Tx_Lidar);               //define software serial port name as Serial_Lidar and define pin 6 as RX and pin 7 as TX
 SoftwareSerial Serial_Bluetooth(Rx_Bluethooth, Tx_Bluethooth); //define software serial port name as Serial_Bluetooth and define pin 8 as RX and pin 9 as TX
 
@@ -27,6 +27,9 @@ const int HEADER = 0x59; //frame header of data package
 
 int pwm_speed = 100;
 int distanceRight, distanceLeft;
+
+char received_data;
+
 
 void setup()
 {
@@ -60,9 +63,14 @@ void loop()
   Lidar_reading();
   if (Serial_Bluetooth.available() > 0)
   {
-    Serial_Bluetooth.print(dist);
-    Serial.println("Message has been sent to Matlab");
+    received_data = Serial_Bluetooth.read();
+    if (received_data == 'S')
+    {
+      Serial_Bluetooth.print(dist);
+      Serial.println("Message has been sent to Matlab");
+    }
   }
+  
 
   if(dist <= 32)
   {

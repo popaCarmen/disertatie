@@ -78,7 +78,7 @@ function Bluetooth_Callback(hObject, eventdata, handles)
 % hObject    handle to Bluetooth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global bluetooth
 bluetooth = Bluetooth('HC-05',1);
 try  
     fopen(bluetooth);
@@ -94,6 +94,7 @@ function Request_Callback(hObject, eventdata, handles)
 % hObject    handle to Request (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global bluetooth
 fprintf(bluetooth, 'S'); %request new value from Arduino
 pause(0.5);
 received = fgetl(bluetooth) %read the requested data
@@ -132,6 +133,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 %ToDO: sa testez cum pot verifica daca e deschis canalul inainte de a-l
 %inchide
+global bluetooth
 fclose(bluetooth);
 delete(bluetooth);
 clear bluetooth;
