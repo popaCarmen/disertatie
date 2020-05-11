@@ -18,12 +18,9 @@ int i;
 int uart[9];             //save data measured by LiDAR
 const int HEADER = 0x59; //frame header of data package
 
-<<<<<<< HEAD
 char received_data;
-=======
 
 int value = 100;
->>>>>>> 3d00d1ed66bb090ddeed23601e6405affea448dd
 
 void setup()
 {
@@ -37,8 +34,7 @@ void setup()
 void loop()
 {
   Lidar_reading();
-<<<<<<< HEAD
-  if(Serial_Bluetooth.available())
+  if (Serial_Bluetooth.available())
   {
     received_data = Serial_Bluetooth.read();
     if (received_data == 'S')
@@ -46,17 +42,11 @@ void loop()
       Serial_Bluetooth.print(dist);
       Serial.println("Message has been sent to Matlab");
     }
-    
-=======
-//  if(Serial_Bluetooth.available() > 0)
-//  {
-delay(1000);
-   Serial_Bluetooth.print(value);
-   // Serial_Bluetooth.print(0);
-    //Serial.println("Message has been sent to Matlab");
->>>>>>> 3d00d1ed66bb090ddeed23601e6405affea448dd
-    //ToDo: Test if Arduino can send messages as string to Matlab. 
-//  }
+    if (received_data == 'P')
+    {
+      Serial.println("Received message from Matlab is P");
+    }
+  }
 }
 
 void Lidar_reading(void)
@@ -75,7 +65,7 @@ void Lidar_reading(void)
         }
         check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
         if (uart[8] == (check & 0xff))
-        {                                     //verify the received data as per protocol
+        { //verify the received data as per protocol
           dist = uart[2] + uart[3] * 256;     //calculate distance value
           strength = uart[4] + uart[5] * 256; //calculate signal strength value
           Serial.print("dist = ");
