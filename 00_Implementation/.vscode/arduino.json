@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "Lidar_servomotor\\Lidar_servomotor.ino",
+    "port": "COM3"
+}
