@@ -1,15 +1,15 @@
-#include <SoftwareSerial.h> //header file of software serial port
-#include <AltSoftSerial.h> // header file of software serial port for pin 8 and 9 - bluetooth device\
+//#include <SoftwareSerial.h> //header file of software serial port
+//#include <AltSoftSerial.h> // header file of software serial port for pin 8 and 9 - bluetooth device\
 
-#define Tx_Lidar      7
-#define Rx_Lidar      6
+//#define Tx_Lidar      7
+//#define Rx_Lidar      6
+//
+//#define Rx_Bluethooth     8
+//#define Tx_Bluethooth     9
 
-#define Rx_Bluethooth     8
-#define Tx_Bluethooth     9
-
-SoftwareSerial Serial_Lidar(Rx_Lidar, Tx_Lidar); //define software serial port name as Serial_Lidar and define pin 6 as RX and pin 7 as TX
+//SoftwareSerial Serial_Lidar(Rx_Lidar, Tx_Lidar); //define software serial port name as Serial_Lidar and define pin 6 as RX and pin 7 as TX
 //SoftwareSerial Serial_Bluetooth(Rx_Bluethooth, Tx_Bluethooth); //define software serial port name as Serial_Bluetooth and define pin 8 as RX and pin 9 as TX
-AltSoftSerial Serial_Bluetooth;
+//AltSoftSerial Serial_Bluetooth;
 
 int dist;     //actual distance measurements of LiDAR
 int strength; //signal strength of LiDAR
@@ -25,21 +25,21 @@ int value = 100;
 void setup()
 {
   Serial.begin(9600);    //set bit rate of serial port connecting Arduino with computer
-  Serial_Lidar.begin(115200); //set bit rate of serial port connecting LiDAR with Arduino
-  Serial_Bluetooth.begin(9600); //set bit rate of serial port connecting Bluethooth with Arduino
+  Serial3.begin(115200); //set bit rate of serial port connecting LiDAR with Arduino
+  Serial2.begin(9600); //set bit rate of serial port connecting Bluethooth with Arduino
 
   Serial.println("Start");
 }
 
 void loop()
 {
-  Lidar_reading();
-  if (Serial_Bluetooth.available())
+  //Lidar_reading();
+  if (Serial2.available())
   {
-    received_data = Serial_Bluetooth.read();
+    received_data = Serial2.read();
     if (received_data == 'S')
     {
-      Serial_Bluetooth.print(dist);
+      Serial2.print(100);
       Serial.println("Message has been sent to Matlab");
     }
     if (received_data == 'P')
@@ -49,33 +49,33 @@ void loop()
   }
 }
 
-void Lidar_reading(void)
-{
-  if (Serial_Lidar.available())
-  { //check if serial port has data input
-    if (Serial_Lidar.read() == HEADER)
-    { //assess data package frame header 0x59
-      uart[0] = HEADER;
-      if (Serial_Lidar.read() == HEADER)
-      { //assess data package frame header 0x59
-        uart[1] = HEADER;
-        for (i = 2; i < 9; i++)
-        { //save data in array
-          uart[i] = Serial_Lidar.read();
-        }
-        check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
-        if (uart[8] == (check & 0xff))
-        { //verify the received data as per protocol
-          dist = uart[2] + uart[3] * 256;     //calculate distance value
-          strength = uart[4] + uart[5] * 256; //calculate signal strength value
-          Serial.print("dist = ");
-          Serial.print(dist); //output measure distance value of LiDAR
-          Serial.print('\t');
-          Serial.print("strength = ");
-          Serial.print(strength); //output signal strength value
-          Serial.print('\n');
-        }
-      }
-    }
-  }
-}
+//void Lidar_reading(void)
+//{
+//  if (Serial_Lidar.available())
+//  { //check if serial port has data input
+//    if (Serial_Lidar.read() == HEADER)
+//    { //assess data package frame header 0x59
+//      uart[0] = HEADER;
+//      if (Serial_Lidar.read() == HEADER)
+//      { //assess data package frame header 0x59
+//        uart[1] = HEADER;
+//        for (i = 2; i < 9; i++)
+//        { //save data in array
+//          uart[i] = Serial_Lidar.read();
+//        }
+//        check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
+//        if (uart[8] == (check & 0xff))
+//        { //verify the received data as per protocol
+//          dist = uart[2] + uart[3] * 256;     //calculate distance value
+//          strength = uart[4] + uart[5] * 256; //calculate signal strength value
+//          Serial.print("dist = ");
+//          Serial.print(dist); //output measure distance value of LiDAR
+//          Serial.print('\t');
+//          Serial.print("strength = ");
+//          Serial.print(strength); //output signal strength value
+//          Serial.print('\n');
+//        }
+//      }
+//    }
+//  }
+//}

@@ -3,16 +3,16 @@
   For details, refer to Product Specifications.
   For Arduino boards with only one serial port like UNO board, the function of software visual serial port is to be used.
 */
-
-#include <SoftwareSerial.h>  //header file of software serial port
+#include <Servo.h>
+//#include <SoftwareSerial.h>  //header file of software serial port
 //#include <Servo.h>  //header file for servomotor
-#include <ServoTimer2.h>
+//#include <ServoTimer2.h>
 
-#define X_Serv_Pin 11
+#define X_Serv_Pin 9
 
-SoftwareSerial Serial1(6, 7); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
+//SoftwareSerial Serial1(6, 7); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
 
-ServoTimer2 horizontal_Servo;
+Servo horizontal_Servo;
 
 //Servo horizontal_Servo; //define servo for horizontal movement
 /* For Arduinoboards with multiple serial ports like DUEboard, interpret above two pieces of code and directly use Serial1 serial port*/
@@ -42,20 +42,20 @@ int distance;
 int serial_open_flag;
 bool moved = false;
 void setup() {
- // horizontal_Servo.attach(X_Serv_Pin);
+  horizontal_Servo.attach(X_Serv_Pin);
 
  // horizontal_Servo.write(middlePos); //initial position
 
   Serial.begin(9600); //set bit rate of serial port connecting Arduino with computer
-  Serial1.begin(115200);  //set bit rate of serial port connecting LiDAR with Arduino
+  Serial3.begin(115200);  //set bit rate of serial port connecting LiDAR with Arduino
   Serial.println("Start");
 }
 
 void loop() {
 
-  if (moved == false)
-  {
-    Serial.println("Now servo");
+ // if (moved == false)
+ // {
+  //  Serial.println("Now servo");
     if (scanning == true)
     {
       if (scanDirection == true)
@@ -71,7 +71,7 @@ void loop() {
         scanDirection = !scanDirection;
         scanning = false; //???????
       }
-    }
+   // }
     else {
       scanning = true;
       posServo = minPosServo;
@@ -80,21 +80,28 @@ void loop() {
     posServo = min(max(posServo, minPosServo), maxPosServo);
     moved = moveServo();
   }
-  else
-  {
+ // else
+  //{
 
     Serial.println("Now lidar");
+    int distance = 0;
+  int strength = 0;
+
     //  horizontal_Servo.detach();
-    if (serial_open_flag == 0)
+   // if (serial_open_flag == 0)
     {
-      horizontal_Servo.detach();
-      Serial1.begin(115200);
-      serial_open_flag = 1;
+      //horizontal_Servo.detach();
+     // Serial1.begin(115200);
+     // serial_open_flag = 1;
       Serial.print("Start serial1");
     }
-       distance = Lidar_reading();
+       distance = Lidar_reading(&distance, &strength);
+        Serial.print(distance);
+      Serial.print("cm\t");
+      Serial.print("strength: ");
+      Serial.println(strength);
 
-  }
+ // }
 
 
 
@@ -128,15 +135,15 @@ void loop() {
 
 bool moveServo()
 {
-    horizontal_Servo.attach(X_Serv_Pin);
+  //  horizontal_Servo.attach(X_Serv_Pin);
   bool movement;
   static int lastPosServo;
   // int delta = 0;
   if (posServo != lastPosServo)
   {
     // delta+=abs(posServo-lastPosServo);
-    int local_position = 750 + posServo * 8.34;
-    horizontal_Servo.write(local_position);
+    //int local_position = 750 + posServo * 8.34;
+    horizontal_Servo.write(posServo);
     Serial.print("Angle: ");
     Serial.println(posServo);
     lastPosServo = posServo;
@@ -149,35 +156,32 @@ bool moveServo()
   return movement;
 }
 
-int Lidar_reading(void)
+int Lidar_reading(int* distance, int* strength)
 {
-  if (Serial1.available()) {  //check if serial port has data input
-
-    if (Serial1.read() == HEADER) { //assess data package frame header 0x59
-
-      uart[0] = HEADER;
-      if (Serial1.read() == HEADER) { //assess data package frame header 0x59
-        uart[1] = HEADER;
-        for (i = 2; i < 9; i++) { //save data in array
-          uart[i] = Serial1.read();
-        }
-        check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
-        if (uart[8] == (check & 0xff)) { //verify the received data as per protocol
-          dist = uart[2] + uart[3] * 256;     //calculate distance value
-          strength = uart[4] + uart[5] * 256; //calculate signal strength value
-          Serial.print("distance read from function = ");
-          Serial.println(dist); //output measure distance value of LiDAR
-          moved = false;
-          Serial1.end();
-          Serial.println("Stop lidar"); horizontal_Servo.attach(X_Serv_Pin);
-          serial_open_flag = 0;
-          //           Serial.print('\t');
-          //           Serial.print("strength = ");
-          //           Serial.print(strength); //output signal strength value
-          //           Serial.print('\n');
-        }
+  static char i = 0;
+  char j = 0;
+  int checksum = 0;
+  static int rx[9];
+  if(Serial3.available())
+  { 
+    // Serial.println( "tfmini serial available" );
+    rx[i] = Serial3.read();
+    if(rx[0] != 0x59) {
+      i = 0;
+    } else if(i == 1 && rx[1] != 0x59) {
+      i = 0;
+    } else if(i == 8) {
+      for(j = 0; j < 8; j++) {
+        checksum += rx[j];
       }
+      if(rx[8] == (checksum % 256)) {
+        *distance = rx[2] + rx[3] * 256;
+        *strength = rx[4] + rx[5] * 256;
+      }
+      i = 0;
+    } else
+    {
+      i++;
     }
-  }
-  return dist;
+  } 
 }
