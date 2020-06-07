@@ -1,0 +1,6 @@
+Localization methods - https://blog.cometlabs.io/teaching-robots-presence-what-you-need-to-know-about-slam-9bf0ca037553
+SLAM - http://ais.informatik.uni-freiburg.de/teaching/ss12/robotics/slides/12-slam.pdf 
+https://ceit.aut.ac.ir/~shiry/lecture/robotics/Robot%20Navigation/Introduction%20to%20SLAM.pdf
+
+
+Keyword – SLAM; localization; mapping; obstacle detection; LIDAR-SLAM; autonomous mobile robots; real-world autonomous navigation; local map; global map; odometry. 
