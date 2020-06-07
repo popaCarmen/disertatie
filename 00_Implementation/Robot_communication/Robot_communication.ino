@@ -1,204 +1,184 @@
-#include <SoftwareSerial.h> //header file of software serial port
+#include <Servo.h>
 
-#define Tx_Lidar 7
-#define Rx_Lidar 6
+#define X_Serv_Pin 9
 
-#define Rx_Bluethooth 8
-#define Tx_Bluethooth 9
 
-//Robot motors
-//Motor A
-#define enA 3
-#define in1 2
-#define in2 A1
-//Motor B
-#define enB 5
-#define in3 4
-#define in4 A0
-SoftwareSerial Serial_Lidar(Rx_Lidar, Tx_Lidar);               //define software serial port name as Serial_Lidar and define pin 6 as RX and pin 7 as TX
-SoftwareSerial Serial_Bluetooth(Rx_Bluethooth, Tx_Bluethooth); //define software serial port name as Serial_Bluetooth and define pin 8 as RX and pin 9 as TX
+Servo horizontal_Servo;
 
-int dist;     //actual distance measurements of LiDAR
-int strength; //signal strength of LiDAR
-int check;    //save check value
+int minPosServo = 0;
+int maxPosServo = 180;
+int lastPosServo = 0; // variable used for determining if the servo position is different from the previous one
+int posServo = minPosServo; // this is the middle position of the servomotor, so that the lidar sensor to be in the middle
+
+int distance_values[180];
+int angle_value[180];
+
+bool scanning = true;
+bool scanDirection = true;
+int scanIncrement = 1;
+bool read_flag = 0;
+
+bool moved = false;
+bool finished = false;
+
 int i;
-int uart[9];             //save data measured by LiDAR
-const int HEADER = 0x59; //frame header of data package
-
-int pwm_speed = 100;
-int distanceRight, distanceLeft;
-
 char received_data;
+int indexx = 0;
+bool array_reached = false;
 
+void setup() {
+  horizontal_Servo.attach(X_Serv_Pin);
 
-void setup()
-{
-  // Set all the motor control pins to outputs
-  pinMode(enA, OUTPUT);
-  pinMode(enB, OUTPUT);
-  pinMode(in1, OUTPUT);
-  pinMode(in2, OUTPUT);
-  pinMode(in3, OUTPUT);
-  pinMode(in4, OUTPUT);
-
-  // Turn off motors - Initial state
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);
-
-  Serial.begin(9600);           //set bit rate of serial port connecting Arduino with computer
-  Serial_Lidar.begin(115200);   //set bit rate of serial port connecting LiDAR with Arduino
-  Serial_Bluetooth.begin(9600); //set bit rate of serial port connecting Bluethooth with Arduino
-
+  Serial.begin(9600); //set bit rate of serial port connecting Arduino with computer
+  Serial3.begin(115200);  //set bit rate of serial port connecting LiDAR with Arduino
+  Serial2.begin(9600); // Bluetooth
   Serial.println("Start");
 
-  //Set Pwm speed for the motors
-  analogWrite(enA, pwm_speed);
-  analogWrite(enB, pwm_speed);
+  horizontal_Servo.write(minPosServo);
 }
 
-void loop()
-{
-  Lidar_reading();
-  if (Serial_Bluetooth.available() > 0)
-  {
-    received_data = Serial_Bluetooth.read();
-    if (received_data == 'S')
-    {
-      Serial_Bluetooth.print(dist);
-      Serial.println("Message has been sent to Matlab");
-    }
-  }
-  
+void loop() {
+  int distance = 0;
+  int strength = 0;
 
-  if(dist <= 32)
+  if (finished == false)
   {
-    Serial_Bluetooth.print("Distance < 32");
-    Stop();
-    delay(200);
-    backward();
-    delay(200);
-    Stop();
-    distanceRight = LookRight();
-    distanceLeft = LookLeft();
-    delay(300);
-
-    if(distanceRight >= distanceLeft)
+    if (read_flag == true)
     {
-      rightward();
-      delay(1000);
-      Serial_Bluetooth.print("Distance right > distance left");
-      Stop();
+      if (scanning == true)
+      {
+        if (scanDirection == true)
+        {
+          posServo += scanIncrement;
+        }
+        else
+        {
+          posServo -= scanIncrement;
+        }
+        if (posServo > maxPosServo || posServo < minPosServo)
+        {
+          scanDirection = !scanDirection;
+          scanning = false; //???????
+        }
+      }
+      else {
+        scanning = true;
+        posServo = minPosServo;
+        scanDirection = true;
+        finished = true;
+      }
+      posServo = min(max(posServo, minPosServo), maxPosServo);
+      moved = moveServo();
     }
     else
     {
-      leftward();
-      delay(1000);
-      Serial_Bluetooth.print("Distance left > distance right");
-      Stop();
-    }
-  }
-  else
-  {
-    forward();
-    Serial_Bluetooth.print("Forward");
-  }
-  
-}
+      Lidar_reading(&distance, &strength);
+      if (distance) {
+        if (i <= 180)
+        {
+          distance_values[i] = distance;
+          angle_value[i] = posServo;
+        }
+        if (Serial2.available())
+        {
+          char received_data = Serial2.read();
+          if (received_data == 'S')
+          {
+            Serial2.print(distance);
+            Serial.println("value sent to Matlab");
+          }
+        }
+        Serial.print(distance);
+        Serial.print("cm\t");
+        Serial.print("strength: ");
+        Serial.println(strength);
+        read_flag = true;
 
-int Lidar_reading(void)
-{
-  if (Serial_Lidar.available())
-  { //check if serial port has data input
-    if (Serial_Lidar.read() == HEADER)
-    { //assess data package frame header 0x59
-      uart[0] = HEADER;
-      if (Serial_Lidar.read() == HEADER)
-      { //assess data package frame header 0x59
-        uart[1] = HEADER;
-        for (i = 2; i < 9; i++)
-        { //save data in array
-          uart[i] = Serial_Lidar.read();
-        }
-        check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
-        if (uart[8] == (check & 0xff))
-        {                                     //verify the received data as per protocol
-          dist = uart[2] + uart[3] * 256;     //calculate distance value
-          strength = uart[4] + uart[5] * 256; //calculate signal strength value
-          Serial.print("dist = ");
-          Serial.print(dist); //output measure distance value of LiDAR
-          Serial.print('\t');
-          Serial.print("strength = ");
-          Serial.print(strength); //output signal strength value
-          Serial.print('\n');
-        }
+        i++;
       }
     }
   }
-  return dist;
+  else
+  { //am terminat o tura
+    if (Serial2.available())
+    {
+      received_data = Serial2.read();
+      if (received_data == 'S')
+      {
+        if (array_reached == false)
+        {
+          Serial2.print(distance_values[indexx]);
+          indexx++;
+          if (indexx > 180)
+          {
+            array_reached = true;
+          }
+        }
+        else
+        {
+          Serial2.print("F");
+        }
+      }
+    }
+//    // Serial.println("Am terminat o tura");
+//    Serial.print(" distance: ");
+//    Serial.print(distance_values[j]);
+//    Serial.print(" angle: ");
+//    Serial.println(angle_value[j]);
+  }
+
 }
 
-int LookRight()
+
+
+bool moveServo()
 {
-  Serial_Bluetooth.print("Look right");
-  rightward();
-  delay(1000);
-  int distance = Lidar_reading();
-  Serial_Bluetooth.print("Right distance: " + distance);
- // Serial_Bluetooth.print(distance);
-  leftward();
-  delay(1000);
-  Stop();
-  Serial_Bluetooth.print("Done looking right");
-  return distance;
+  bool movement;
+  static int lastPosServo;
+  Serial.print("Angle: ");
+  Serial.println(posServo);
+  if (posServo != lastPosServo)
+  {
+    horizontal_Servo.write(posServo);
+    Serial.print("Angle: ");
+    Serial.println(posServo);
+    lastPosServo = posServo;
+    movement = true;
+    read_flag = false;
+    delay(50);
+  }
+  Serial.println("Stop servo");
+
+  return movement;
 }
 
-int LookLeft()
+void Lidar_reading(int* distance, int* strength)
 {
-  Serial_Bluetooth.println("Look left");
-  leftward();
-  delay(1000);
-  int distance = Lidar_reading();
-  Serial_Bluetooth.print("Left distance: " + distance);
-  rightward();
-  delay(1000);
-  Stop();
-  Serial_Bluetooth.print("Done looking left");
-  return distance;
-}
-void backward()
-{
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-}
-void forward()
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-}
-void rightward()
-{
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-}
-void leftward()
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-}
-void Stop()
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);
+  static char i = 0;
+  char j = 0;
+  int checksum = 0;
+  static int rx[9];
+  if (Serial3.available())
+  {
+    // Serial.println( "tfmini serial available" );
+    rx[i] = Serial3.read();
+    if (rx[0] != 0x59) {
+      i = 0;
+    } else if (i == 1 && rx[1] != 0x59) {
+      i = 0;
+    } else if (i == 8) {
+      for (j = 0; j < 8; j++) {
+        checksum += rx[j];
+      }
+      if (rx[8] == (checksum % 256)) {
+        *distance = rx[2] + rx[3] * 256;
+        *strength = rx[4] + rx[5] * 256;
+
+      }
+      i = 0;
+    } else
+    {
+      i++;
+    }
+  }
 }

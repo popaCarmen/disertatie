@@ -21,10 +21,30 @@ disp('Bluetooth opened succesfully');
 % end
 
 i=1; 
+%fprintf(b, 'S'); %request new value from Arduino
+%pause(0.5);
+
+dist_matrix = zeros(1,180); 
+while 1
 fprintf(b, 'S'); %request new value from Arduino
 pause(0.5);
 received = fgetl(b) %read the requested data
-distance = str2double(received)
+
+if received ~= 'F' %not equal
+    distance = str2double(received)
+    dist_matrix(i) = distance;
+    i = i+1;
+    if(i>=10) 
+        break;
+    end
+else
+    break;
+end
+
+end
+
+disp(dist_matrix)
+%distance = str2double(received)
 % if(received <= 0)
 %     fclose(b);
 %     delete(b);

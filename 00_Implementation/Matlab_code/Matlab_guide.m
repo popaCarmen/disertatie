@@ -43,6 +43,22 @@ else
 end
 % End initialization code - DO NOT EDIT
 
+function init()
+global dist_matrix;
+global timer_Bluetooth;
+global index;
+timer_Bluetooth = timer;
+timer_Bluetooth.Period = 0.1;
+timer_Bluetooth.ExecutionMode = 'fixedRate';
+timer_Bluetooth.TasksToExecute = Inf;
+
+
+dist_matrix = zeros(1,180); 
+index = 1;
+
+
+
+
 
 % --- Executes just before Matlab_guide is made visible.
 function Matlab_guide_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -60,6 +76,7 @@ guidata(hObject, handles);
 
 % UIWAIT makes Matlab_guide wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
+init();
 
 
 % --- Outputs from this function are returned to the command line.
@@ -79,13 +96,30 @@ function Bluetooth_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global bluetooth
+global timer_Bluetooth
 bluetooth = Bluetooth('HC-05',1);
 try  
     fopen(bluetooth);
     set(bluetooth, 'TimeOut', 1);
     disp('Bluetooth opened succesfully');
+    timer_Bluetooth.Timerfcn = @(~,~)Read_data(bluetooth);
+    start(timer_Bluetooth)
 catch e
     disp('Bluetooth detected an error and could not start');
+end
+
+function Read_data(Bluetooth_device)
+global dist_matrix
+global index
+fprintf(Bluetooth_device, 'S'); %request new value from Arduino
+
+received = fgetl(Bluetooth_device) %read the requested data
+if received == 'F'
+     
+else
+    distance = str2double(received)
+    dist_matrix(index) = distance
+    index = index+1;
 end
 
 
@@ -134,8 +168,11 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 %ToDO: sa testez cum pot verifica daca e deschis canalul inainte de a-l
 %inchide
 global bluetooth
+global timer_Bluetooth
 fclose(bluetooth);
 delete(bluetooth);
 clear bluetooth;
 disp('Bluetooth closed succesfully')
 delete(hObject);
+delete(timer_Bluetooth)
+

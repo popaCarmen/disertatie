@@ -21,6 +21,9 @@ const int HEADER = 0x59; //frame header of data package
 char received_data;
 
 int value = 100;
+int value_array[180];
+int index = 0;
+bool finished = true;
 
 void setup()
 {
@@ -29,53 +32,34 @@ void setup()
   Serial2.begin(9600); //set bit rate of serial port connecting Bluethooth with Arduino
 
   Serial.println("Start");
+
+  value_array[0] = -255;
+  for (int i = 1; i < 180; i++)
+  {
+    value_array[i] = i;
+  }
 }
 
 void loop()
 {
-  //Lidar_reading();
   if (Serial2.available())
   {
     received_data = Serial2.read();
     if (received_data == 'S')
     {
-      Serial2.print(100);
-      Serial.println("Message has been sent to Matlab");
-    }
-    if (received_data == 'P')
-    {
-      Serial.println("Received message from Matlab is P");
+      if (finished == true)
+      {
+        Serial2.print(value_array[index]);
+        index++;
+        if(index >= 180)
+        {
+          finished = false;
+        }
+      }
+      else
+      {
+        Serial2.print("F");
+      }
     }
   }
 }
-
-//void Lidar_reading(void)
-//{
-//  if (Serial_Lidar.available())
-//  { //check if serial port has data input
-//    if (Serial_Lidar.read() == HEADER)
-//    { //assess data package frame header 0x59
-//      uart[0] = HEADER;
-//      if (Serial_Lidar.read() == HEADER)
-//      { //assess data package frame header 0x59
-//        uart[1] = HEADER;
-//        for (i = 2; i < 9; i++)
-//        { //save data in array
-//          uart[i] = Serial_Lidar.read();
-//        }
-//        check = uart[0] + uart[1] + uart[2] + uart[3] + uart[4] + uart[5] + uart[6] + uart[7];
-//        if (uart[8] == (check & 0xff))
-//        { //verify the received data as per protocol
-//          dist = uart[2] + uart[3] * 256;     //calculate distance value
-//          strength = uart[4] + uart[5] * 256; //calculate signal strength value
-//          Serial.print("dist = ");
-//          Serial.print(dist); //output measure distance value of LiDAR
-//          Serial.print('\t');
-//          Serial.print("strength = ");
-//          Serial.print(strength); //output signal strength value
-//          Serial.print('\n');
-//        }
-//      }
-//    }
-//  }
-//}

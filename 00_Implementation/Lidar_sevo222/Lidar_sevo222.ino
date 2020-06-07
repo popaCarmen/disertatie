@@ -28,6 +28,7 @@ void setup() {
 
   Serial.begin(9600); //set bit rate of serial port connecting Arduino with computer
   Serial3.begin(115200);  //set bit rate of serial port connecting LiDAR with Arduino
+  Serial2.begin(9600); // Bluetooth
   Serial.println("Start");
 
   horizontal_Servo.write(minPosServo);
@@ -75,11 +76,21 @@ void loop() {
           distance_values[i] = distance;
           angle_value[i] = posServo;
         }
+        if(Serial2.available())
+        {
+          char received_data = Serial2.read();
+          if(received_data == 'S')
+          {
+            Serial2.print(distance);
+            Serial.println("value sent to Matlab");
+          }
+        }
         Serial.print(distance);
         Serial.print("cm\t");
         Serial.print("strength: ");
         Serial.println(strength);
-        read_flag = true;
+                    read_flag = true;
+
         i++;
       }
     }
