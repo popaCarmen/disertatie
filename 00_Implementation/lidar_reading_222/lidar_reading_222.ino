@@ -4,9 +4,9 @@
   For Arduino boards with only one serial port like UNO board, the function of software visual serial port is to be used. 
 */ 
 
-#include <SoftwareSerial.h>  //header file of software serial port
-
-SoftwareSerial Serial3(3,2); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
+//#include <SoftwareSerial.h>  //header file of software serial port
+//
+//SoftwareSerial Serial3(3,2); //define software serial port name as Serial1 and define pin2 as RX and pin3 as TX
 
 /* For Arduinoboards with multiple serial ports like DUEboard, interpret above two pieces of code and directly use Serial1 serial port*/
 
@@ -17,6 +17,8 @@ int check;  //save check value
 int i;
 int uart[9];  //save data measured by LiDAR
 const int HEADER=0x59;  //frame header of data package
+
+char received_data;
 
 void setup() {
   Serial.begin(115200); //set bit rate of serial port connecting Arduino with computer
@@ -29,9 +31,14 @@ void loop() {
   if (Serial3.available()) {  //check if serial port has data input
     // Serial.println("aici");
 //header = 0x59
+uart[i] = Serial3.read();
+ Serial.println(Serial3.read());
     if(Serial3.read() == HEADER) {  //assess data package frame header 0x59
+      
       uart[0]=HEADER;
+      
       if (Serial3.read() == HEADER) { //assess data package frame header 0x59
+       // Serial.println("aici");
         uart[1] = HEADER;
         for (i = 2; i < 9; i++) { //save data in array
           uart[i] = Serial3.read();

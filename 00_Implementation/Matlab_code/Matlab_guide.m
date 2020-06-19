@@ -22,7 +22,7 @@ function varargout = Matlab_guide(varargin)
 
 % Edit the above text to modify the response to help Matlab_guide
 
-% Last Modified by GUIDE v2.5 10-May-2020 19:38:39
+% Last Modified by GUIDE v2.5 19-Jun-2020 22:50:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,7 +55,8 @@ timer_Bluetooth.TasksToExecute = Inf;
 
 dist_matrix = zeros(1,180); 
 index = 1;
-
+figure(1)
+%hold on
 
 
 
@@ -97,6 +98,8 @@ function Bluetooth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global bluetooth
 global timer_Bluetooth
+global first 
+first = true
 bluetooth = Bluetooth('HC-05',1);
 try  
     fopen(bluetooth);
@@ -111,16 +114,34 @@ end
 function Read_data(Bluetooth_device)
 global dist_matrix
 global index
+global first;
+
 fprintf(Bluetooth_device, 'S'); %request new value from Arduino
 
-received = fgetl(Bluetooth_device) %read the requested data
-if received == 'F'
-     
-else
-    distance = str2double(received)
-    dist_matrix(index) = distance
-    index = index+1;
-end
+received = fgetl(Bluetooth_device); %read the requested data
+
+w = warning('query','last');
+id = w.identifier;
+warning('off',id)
+
+% first_str = extractBetween(received,1,1);
+% first_str = char(first_str);
+% 
+% if first_str == 'F'
+%     if first == true
+%         dist_matrix
+%        first = false;
+%    end
+% end
+%  if first_str == 'D'
+%      remaining_str = extractBetween(received,2,'.')
+%      remaining_str=char(remaining_str)
+%      distance = str2double(remaining_str);
+%      dist_matrix(index) = distance;
+%      index = index+1;
+%  %else
+%      %save angle values here
+%  end
 
 
 % --- Executes on button press in Request.
@@ -169,10 +190,127 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 %inchide
 global bluetooth
 global timer_Bluetooth
-fclose(bluetooth);
-delete(bluetooth);
-clear bluetooth;
-disp('Bluetooth closed succesfully')
+try 
+    fclose(bluetooth);
+    delete(bluetooth);
+    clear bluetooth;
+    disp('Bluetooth closed succesfully');
+catch e
+    disp('Bluetooth could not close');
+end
 delete(hObject);
 delete(timer_Bluetooth)
 
+
+% --- Executes on button press in TwoD_map.
+function TwoD_map_Callback(hObject, eventdata, handles)
+% hObject    handle to TwoD_map (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+azimuth = zeros(1,180);
+x = zeros(1,180);
+y = zeros(1,180);
+deg2rad = pi/180;
+%DISTANCE WILL BE READ FROM ROBOT
+distances = rand(1,180)*10;
+
+for ser=1:180
+    %SERVO-MOTOR POSITION WILL BE READ FROM ROBOT
+    posServoX(ser) = ser; 
+end
+
+for j=1:180 % servo x
+   azimuth(j) =  posServoX(j)*deg2rad;
+   x(j) = distances(j)*cos(azimuth(j));
+   y(j) = distances(j)*sin(azimuth(j));
+end
+
+figure(1)
+plot(x,y,'.')
+xlabel('x')
+ylabel('y')
+title("2D Map")
+grid on
+
+% --- Executes on button press in ThreeD_Map.
+function ThreeD_Map_Callback(hObject, eventdata, handles)
+% hObject    handle to ThreeD_Map (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+azimuth = zeros(1,180);
+elevation = zeros(1,180);
+x = zeros(180);
+y = zeros(180);
+z = zeros(180);
+deg2rad = pi/180;
+
+%DISTANCE WILL BE READ FROM ROBOT
+distances = rand(180)*10;
+
+for ser=1:180
+    %SERVO-MOTOR POSITION WILL BE READ FROM ROBOT
+    posServoX(ser) = ser; 
+    posServoY(ser) = ser;
+end
+
+for i=1:180 % servo y 
+    %servo y are doar 140 valori
+    for j=1:180 % servo x
+       azimuth(i) =  posServoX(i)*deg2rad;
+       elevation(i) = posServoY(i)*deg2rad;
+       x(i,j) = distances(i,j)*sin(elevation(i))*cos(azimuth(i));
+       y(i,j) = distances(i)*sin(elevation(i))*sin(azimuth(i));
+       z(i,j) = distances(i)*cos(elevation(i));
+    end
+end
+figure(1)
+plot3(x,y,z,'.')
+xlabel('x')
+ylabel('y')
+zlabel('z')
+title("3D Map")
+grid on
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
