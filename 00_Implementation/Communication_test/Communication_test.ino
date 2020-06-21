@@ -42,7 +42,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  Serial.println(sent);
+  //Serial.println(sent);
   if (Serial2.available())
   {
     received_data = Serial2.read();
@@ -57,8 +57,8 @@ void loop() {
 //          array_reached = true;
 //          send_value_flag = false; //s-a trimis primul set de date
           Serial.println("Send data to Matlab");
-          delay(2000);
-          Serial2.print("F");
+          //delay(2000);
+         // Serial2.print("F");
         }
       }
     }

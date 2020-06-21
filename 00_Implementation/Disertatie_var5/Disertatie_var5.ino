@@ -44,6 +44,8 @@ bool array_reached = false;
 
 bool printed = false;
 int x_movement = 0;
+
+String string_blue;
 void setup() {
   horizontal_Servo.attach(X_Serv_Pin);
   vertical_Servo.attach(Y_Serv_Pin);
@@ -64,12 +66,14 @@ void loop() {
 
   if (finished == true)
   {
+
     Serial.println("Am terminat de tot");
   }
   else
   {
     if (send_value_flag == false) // check if scan mode is finished
     {
+
       if (read_flag == true) // check if sensor readed the value
       {
         if (scanning == true)
@@ -97,6 +101,7 @@ void loop() {
               scanning = false;
               //Finished scanning one round pe x
               finished = true;
+              Serial.println("Am terminat toata scanarea");
             }
           }
         }
@@ -105,46 +110,76 @@ void loop() {
           scanning = true;
           posServoX = 90;
           posServoY = 90;
-          scanDirection = true;
+         // scanDirection = true;
         }
         posServoX = min(max(posServoX, minPosServoX), maxPosServoX);
         posServoY = min(max(posServoY, minPosServoY), maxPosServoY);
 
         moved = moveServo();
+
       }
       else
       {
-        //Lidar_reading(&distance, &strength);
-        distance = i;
-        if (distance) {
+
+        Lidar_reading(&distance, &strength);
+        //distance = i;
+        if (distance>0) {
           if (posServoY >= 10 )
           {
-            distance_values[150 - posServoY] = distance;
-            angle_value[150 - posServoY] = 180 - posServoY;
+            string_blue += 'D';
+            string_blue += String(distance);
+            string_blue += 'X';
+            string_blue += String(posServoX);
+            string_blue += 'Y';
+            string_blue += String(posServoY);
+            // distance_values[150 - posServoY] = distance;
+            // angle_value[150 - posServoY] = 180 - posServoY;
           }
+//          else
+//          {
+//            string_blue += String("END");
+//          }
+          //i++;
           read_flag = true;
-          i++;
         }
       }
     }
     else
-    {
+    {                                       
+       //Serial.println(string_blue);
       if (Serial2.available())
       {
+         Serial.println("Serial 2 available");
         received_data = Serial2.read();
         if (received_data == 'S')
         {
-          if (array_reached == false)
+          // if (array_reached == false)
           {
-            Serial2.print(distance_values[indexx]);
-            indexx++;
-            if (indexx > 140)
+            //Serial2.print(distance_values[indexx]);
+           // if(printed == false)
             {
-              array_reached = true;
-              send_value_flag = false; //s-a trimis primul set de date
-               Serial.println("Send data to Matlab");
-               Serial2.print("F");
+              Serial.println(string_blue);
+              Serial2.print(string_blue);
+              Serial.println("Send data to Matlab");
+             // printed = true;
+            //  send_value_flag = false; //s-a trimis primul set de date
+             // string_blue = "";
+             //  Serial.println("Empty string");
+              // Serial.println(string_blue);
             }
+//            else
+            {
+              //Serial.println("aici");
+              //dbreak
+            }
+//            indexx++;
+//            if (indexx > 140)
+//            {
+//              array_reached = true;
+//              send_value_flag = false; //s-a trimis primul set de date
+//              Serial.println("Send data to Matlab");
+//              Serial2.print("F");
+//            }
           }
         }
       }
@@ -203,6 +238,10 @@ void Lidar_reading(int* distance, int* strength)
       if (rx[8] == (checksum % 256)) {
         *distance = rx[2] + rx[3] * 256;
         *strength = rx[4] + rx[5] * 256;
+        Serial.print("Distance: ");
+        Serial.print(*distance);
+        Serial.println(" cm ");
+          
 
       }
       i = 0;

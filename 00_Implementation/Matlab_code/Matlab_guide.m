@@ -53,7 +53,7 @@ timer_Bluetooth.ExecutionMode = 'fixedRate';
 timer_Bluetooth.TasksToExecute = Inf;
 
 
-dist_matrix = zeros(1,180); 
+dist_matrix = zeros(180,140); %x - linii, y - coloane 
 index = 1;
 figure(1)
 %hold on
@@ -115,15 +115,36 @@ function Read_data(Bluetooth_device)
 global dist_matrix
 global index
 global first;
-
 fprintf(Bluetooth_device, 'S'); %request new value from Arduino
 
-received = fgetl(Bluetooth_device); %read the requested data
+received = fgetl(Bluetooth_device) %read the requested data
 
 w = warning('query','last');
 id = w.identifier;
 warning('off',id)
 
+if received ~= 0
+    disp('Received message') 
+    
+    distance = extractBetween(received,'D','X') 
+    %distance = char(distance)
+    distance = str2double(distance)
+    prima = distance(1)
+    
+    x_position = extractBetween(received,'X','Y')
+    %x_position = char(x_position)
+    x_position = str2double(x_position)
+    y_position = extractBetween(received,'Y','D') %cell array
+    %y_position = char(y_position) %char array
+    y_position = str2double(y_position)
+    for index=1:size(y_position)
+        dist_matrix(x_position+1,(151-y_position(index))) = distance(index);
+    end
+    
+    dist_matrix
+    %size(y_position)
+    %dist_matrix(x_position, 
+end
 % first_str = extractBetween(received,1,1);
 % first_str = char(first_str);
 % 
