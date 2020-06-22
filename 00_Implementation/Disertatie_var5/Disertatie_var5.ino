@@ -135,10 +135,6 @@ void loop() {
             // distance_values[150 - posServoY] = distance;
             // angle_value[150 - posServoY] = 180 - posServoY;
           }
-//          else
-//          {
-//            string_blue += String("END");
-//          }
           //i++;
           read_flag = true;
         }
@@ -162,8 +158,8 @@ void loop() {
               Serial2.print(string_blue);
               Serial.println("Send data to Matlab");
              // printed = true;
-            //  send_value_flag = false; //s-a trimis primul set de date
-             // string_blue = "";
+              send_value_flag = false; //s-a trimis primul set de date
+              string_blue = "";
              //  Serial.println("Empty string");
               // Serial.println(string_blue);
             }
