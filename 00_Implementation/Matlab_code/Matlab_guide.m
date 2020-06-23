@@ -47,16 +47,26 @@ function init()
 global dist_matrix;
 global timer_Bluetooth;
 global index;
+global bluetooth;
+
 timer_Bluetooth = timer;
 timer_Bluetooth.Period = 0.1;
 timer_Bluetooth.ExecutionMode = 'fixedRate';
 timer_Bluetooth.TasksToExecute = Inf;
 
+bluetooth = Bluetooth('HC-05',1);
+try  
+    fopen(bluetooth);
+    set(bluetooth, 'TimeOut', 1);
+    disp('Bluetooth opened succesfully');
+catch e
+    disp('Bluetooth detected an error and could not start');
+end
 
 dist_matrix = zeros(180,140); %x - linii, y - coloane 
 index = 1;
 figure(1)
-%hold on
+
 
 
 
@@ -96,20 +106,12 @@ function Bluetooth_Callback(hObject, eventdata, handles)
 % hObject    handle to Bluetooth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global bluetooth
+
 global timer_Bluetooth
 global first 
 first = true
-bluetooth = Bluetooth('HC-05',1);
-try  
-    fopen(bluetooth);
-    set(bluetooth, 'TimeOut', 1);
-    disp('Bluetooth opened succesfully');
-    timer_Bluetooth.Timerfcn = @(~,~)Read_data(bluetooth);
-    start(timer_Bluetooth)
-catch e
-    disp('Bluetooth detected an error and could not start');
-end
+
+
 
 function Read_data(Bluetooth_device)
 global dist_matrix
@@ -164,6 +166,35 @@ end
 %  %else
 %      %save angle values here
 %  end
+
+
+function Read_data_2D(Bluetooth_device)
+global Matrix_2D
+global index
+fprintf(Bluetooth_device, '2D'); %request new value from Arduino
+
+received = fgetl(Bluetooth_device) %read the requested data
+
+w = warning('query','last');
+id = w.identifier;
+warning('off',id)
+
+% if received ~= 0
+%     disp('Received message') 
+%     distance = extractBetween(received,'D','X'); 
+%     distance = str2double(distance);    
+%     x_position = extractBetween(received,'X','D')
+%     x_position = str2double(x_position)
+%     if x_position >= 180
+%       % 
+%     else
+%         for index=1:size(x_position)
+%             Matrix_2D(x_position+1) = distance(index);
+%         end
+%     end
+%     Matrix_2D      
+% end
+
 
 
 % --- Executes on button press in Request.
@@ -229,6 +260,14 @@ function TwoD_map_Callback(hObject, eventdata, handles)
 % hObject    handle to TwoD_map (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global timer_Bluetooth;
+global bluetooth;
+timer_Bluetooth.Timerfcn = @(~,~)Read_data_2D(bluetooth);
+start(timer_Bluetooth);
+disp('Timer bluetooth started');
+
+
+
 azimuth = zeros(1,180);
 x = zeros(1,180);
 y = zeros(1,180);
