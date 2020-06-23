@@ -1,11 +1,11 @@
 // Motor A connections
-int enA = 9;
-int in1 = 8;
-int in2 = 7;
-// Motor B connections
-int enB = 3;
-int in3 = 5;
-int in4 = 4;
+#define enA 3
+#define in1 2
+#define in2 A1
+//Motor B
+#define enB 5
+#define in3 4
+#define in4 A0
 
 void setup() {
   // Set all the motor control pins to outputs
@@ -21,13 +21,22 @@ void setup() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
+
+   analogWrite(enA, 80);
+  analogWrite(enB, 80);
 }
 
 void loop() {
-  directionControl();
+  rightward();
+  //directionControl();
+  delay(3000);
+  //speedControl();
+  delay(2000);
+  Stop();
   delay(1000);
-  speedControl();
+  //speedControl();
   delay(1000);
+  
 }
 
 // This function lets you control spinning direction of motors
@@ -67,20 +76,56 @@ void speedControl() {
   digitalWrite(in4, HIGH);
   
   // Accelerate from zero to maximum speed
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < 100; i++) {
     analogWrite(enA, i);
     analogWrite(enB, i);
     delay(20);
   }
   
   // Decelerate from maximum speed to zero
-  for (int i = 255; i >= 0; --i) {
+  for (int i = 100; i >= 0; --i) {
     analogWrite(enA, i);
     analogWrite(enB, i);
     delay(20);
   }
   
   // Now turn off motors
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+}
+
+void backward()
+{
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+void forward()
+{
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+void rightward()
+{
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+void leftward()
+{
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+void Stop()
+{
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
