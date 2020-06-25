@@ -89,56 +89,64 @@ void loop() {
         vertical_Servo.write(90);
         if (finished == false)
         {
-        if (send_value_flag == false)
-        {
-          if (read_flag == true)
+
+          if (send_value_flag == false)
           {
-            if (scanning == true)
+
+            if (read_flag == true)
             {
-              if (scanDirection == true)
+              if (scanning == true)
               {
-                posServoX += scanIncrement;
+                if (scanDirection == true)
+                {
+                  posServoX += scanIncrement;
+                }
+                else
+                {
+                  posServoX -= scanIncrement;
+                }
+                if (posServoX > maxPosServoX || posServoX < minPosServoX)
+                {
+                  scanDirection = !scanDirection;
+                  scanning = false; //???????
+                }
               }
-              else
-              {
-                posServoX -= scanIncrement;
+              else {
+                scanning = true;
+                posServoX = minPosServoX;
+                scanDirection = true;
+                send_value_flag = true;
               }
-              if (posServoX > maxPosServoX || posServoX < minPosServoX)
+              posServoX = min(max(posServoX, minPosServoX), maxPosServoX);
+              moved = moveServo();
+            }
+            else
+            {
+
+              Lidar_reading(&distance, &strength);
+              while(!distance)
               {
-                scanDirection = !scanDirection;
-                scanning = false; //???????
+                Lidar_reading(&distance, &strength);
+                Serial.print("dist bef if: ");
+                Serial.println(distance);
+                if (distance) {
+                  string_blue += 'D';
+                  string_blue += String(distance);
+                  string_blue += 'X';
+                  string_blue += String(posServoX);
+                  read_flag = false;
+  
+                  i++;
+                }
               }
             }
-            else {
-              scanning = true;
-              posServoX = minPosServoX;
-              scanDirection = true;
-              send_value_flag = true;
-            }
-            posServoX = min(max(posServoX, minPosServoX), maxPosServoX);
-            moved = moveServo();
           }
           else
-          {
-            Lidar_reading(&distance, &strength);
-            if (distance) {
-
-               string_blue += 'D';
-               string_blue += String(distance);
-               string_blue += 'X';
-               string_blue += String(posServoX);
-              read_flag = true;
-
-              i++;
-            }
-          }
-        }
-        else
-        { //am terminat o tura
-          if (Serial2.available())
-          {
-           {
-               Serial.println(string_blue);
+          { //am terminat o tura
+            if (Serial2.available())
+            {
+              {
+                Serial.println(string_blue);
                 Serial2.print(string_blue);
                 Serial.println("Send data to Matlab");
                 // printed = true;
@@ -146,9 +154,9 @@ void loop() {
                 string_blue = "";
                 Serial2.print(distance_values[indexx]);
                 finished = true;
+              }
             }
           }
-        }
         }
         Serial.println("TWO_D state");
         break;
@@ -283,80 +291,82 @@ void loop() {
   }
 }
 
-  char Read_bluetooth()
+char Read_bluetooth()
+{
+  char message;
+  if (Serial2.available())
   {
-    char message;
-    if (Serial2.available())
+    Serial.println("Serial 2 available");
+    message = Serial2.read();
+    if (message == '2')
     {
-      Serial.println("Serial 2 available");
-      message = Serial2.read();
-      if (message == '2')
-      {
-        state = TWO_D;
+      state = TWO_D;
+    }
+  }
+  return state;
+}
+
+
+bool moveServo()
+{
+  bool movement;
+  static int lastPosServoX;
+  static int lastPosServoY;
+  if (posServoY != lastPosServoY)
+  {
+    vertical_Servo.write(posServoY);
+    Serial.print("Angle Y: ");
+    Serial.println(posServoY);
+    lastPosServoY = posServoY;
+    movement = true;
+    read_flag = false;
+  }
+  if (posServoX != lastPosServoX)
+  {
+    horizontal_Servo.write(posServoX);
+    Serial.print("Angle X: ");
+    Serial.println(posServoX);
+    lastPosServoX = posServoX;
+    movement = true;
+    read_flag = false;
+
+  }
+  delay(15);
+  return movement;
+}
+
+void Lidar_reading(int* distance, int* strength)
+{
+ 
+  static char i = 0;
+  char j = 0;
+  int checksum = 0;
+  static int rx[9];
+  if (Serial3.available())
+  {
+     
+    rx[i] = Serial3.read();
+    if (rx[0] != 0x59) {
+      i = 0;
+    } else if (i == 1 && rx[1] != 0x59) {
+      i = 0;
+    } else if (i == 8) {
+      
+      for (j = 0; j < 8; j++) {
+        checksum += rx[j];
       }
-    }
-    return state;
-  }
+      
+      if (rx[8] == (checksum % 256)) {
+        Serial.println("aici");
+        *distance = rx[2] + rx[3] * 256;
+        *strength = rx[4] + rx[5] * 256;
+       
 
-
-  bool moveServo()
-  {
-    bool movement;
-    static int lastPosServoX;
-    static int lastPosServoY;
-    if (posServoY != lastPosServoY)
-    {
-      vertical_Servo.write(posServoY);
-      Serial.print("Angle Y: ");
-      Serial.println(posServoY);
-      lastPosServoY = posServoY;
-      movement = true;
-      read_flag = false;
-    }
-    if (posServoX != lastPosServoX)
-    {
-      horizontal_Servo.write(posServoX);
-      Serial.print("Angle X: ");
-      Serial.println(posServoX);
-      lastPosServoX = posServoX;
-      movement = true;
-      read_flag = false;
-
-    }
-    delay(15);
-    return movement;
-  }
-
-  void Lidar_reading(int* distance, int* strength)
-  {
-    static char i = 0;
-    char j = 0;
-    int checksum = 0;
-    static int rx[9];
-    if (Serial3.available())
-    {
-      rx[i] = Serial3.read();
-      if (rx[0] != 0x59) {
-        i = 0;
-      } else if (i == 1 && rx[1] != 0x59) {
-        i = 0;
-      } else if (i == 8) {
-        for (j = 0; j < 8; j++) {
-          checksum += rx[j];
-        }
-        if (rx[8] == (checksum % 256)) {
-          *distance = rx[2] + rx[3] * 256;
-          *strength = rx[4] + rx[5] * 256;
-          Serial.print("Distance: ");
-          Serial.print(*distance);
-          Serial.println(" cm ");
-
-
-        }
-        i = 0;
-      } else
-      {
-        i++;
       }
+      i = 0;
+    } else
+    {
+      i++;
     }
   }
+}
