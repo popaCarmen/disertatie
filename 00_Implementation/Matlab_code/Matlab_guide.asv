@@ -204,7 +204,6 @@ if received ~= 0
         if x_position(resetable_index) >= 179
              disp('Stop timer')
              stop(timer_Bluetooth);
-             break;
         end
     end
     last_size = x_size;
