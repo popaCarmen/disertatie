@@ -22,7 +22,7 @@ function varargout = Matlab_guide(varargin)
 
 % Edit the above text to modify the response to help Matlab_guide
 
-% Last Modified by GUIDE v2.5 19-Jun-2020 22:50:57
+% Last Modified by GUIDE v2.5 28-Jun-2020 16:53:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -116,10 +116,11 @@ first = true
 
 
 
-function Read_data(Bluetooth_device)
+function Read_data_3D(Bluetooth_device)
 global dist_matrix
 global index
-fprintf(Bluetooth_device, 'S'); %request new value from Arduino
+
+fprintf(Bluetooth_device, '3D'); %request new value from Arduino
 
 received = fgetl(Bluetooth_device) %read the requested data
 
@@ -176,6 +177,7 @@ global Matrix_2D
 global index
 global last_size
 global timer_Bluetooth;
+
 fprintf(Bluetooth_device, '2D'); %request new value from Arduino
 
 received = fgetl(Bluetooth_device) %read the requested data
@@ -206,11 +208,10 @@ if received ~= 0
     end
     last_size = x_size;
     Matrix_2D   
-%     if x_position(resetable_index-1) >= 179
-%      disp('Stop timer')
-%      stop(timer_Bluetooth);
-%     % break;
-%     end
+     if x_position(resetable_index-1) >= 179
+      disp('Stop timer')
+      stop(timer_Bluetooth);
+     end
 end
 
 
@@ -516,6 +517,36 @@ function edit3_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function edit3_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit4_Callback(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit4 as text
+%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
