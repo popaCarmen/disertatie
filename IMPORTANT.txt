@@ -1,0 +1,16 @@
+1. Numerotare tabele
+2. Numerorare formule
+3. Trebuie adaugata referinta la tabele?
+4. E ok daca iau tabele din diverese surse? 
+
+
+ToDO: schimbat tabel pag 26 "distance measurement on material"
+ToDO: schimbat cod pt citirea datelor 3D pag 50
+ToDO: Adaugat cod pt creare hartii 3D pag 51
+ToDo: Adaugat schema pt conectarea servomotoarelor la arduino -> DONE
+ToDo: Adaugat flowchart pt Bluetooth pag 61 -> DONE
+- Adaugat flowchart si explicatii pt toate aplicatia Arduino
+- Adaugat conexiune Hardware pt toate echipamentele
+- Adaugat concluzii
+- Adaugat anexe: tabele cu valorile 2d si erorilor lor; tabele cu valorile 3d 
+- Aranjare referinte
