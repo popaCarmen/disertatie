@@ -44,7 +44,7 @@ end
 % End initialization code - DO NOT EDIT
 
 function init()
-global dist_matrix;
+global Matrix_2D;
 global timer_Bluetooth;
 global index;
 global bluetooth;
@@ -64,7 +64,7 @@ catch e
     disp('Bluetooth detected an error and could not start');
 end
 
-dist_matrix = zeros(180,140); %x - linii, y - coloane 
+Matrix_2D = zeros(1,180); %x - linii, y - coloane 
 index = 1;
 last_size = 1;
 figure(1)
@@ -195,20 +195,22 @@ if received ~= 0
     resetable_index = 1; %index for distance array
    
     for index=last_size:x_size
-        Matrix_2D(index) = distance(resetable_index);
+       
         if resetable_index >= numel(distance)
             resetable_index = 1;
         else
+            Matrix_2D(index) = distance(resetable_index);
             resetable_index = resetable_index+1
         end
-        if x_position(resetable_index) >= 179
-             disp('Stop timer')
-             stop(timer_Bluetooth);
-             break;
-        end
+
     end
     last_size = x_size;
-    Matrix_2D       
+    Matrix_2D   
+%     if x_position(resetable_index-1) >= 179
+%      disp('Stop timer')
+%      stop(timer_Bluetooth);
+%     % break;
+%     end
 end
 
 
@@ -218,12 +220,130 @@ function Request_Callback(hObject, eventdata, handles)
 % hObject    handle to Request (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global bluetooth
-fprintf(bluetooth, 'S'); %request new value from Arduino
-pause(0.5);
-received = fgetl(bluetooth) %read the requested data
-%distance = str2double(received)
-set(handles.edit1, 'String', received);
+% global bluetooth
+% fprintf(bluetooth, 'S'); %request new value from Arduino
+% pause(0.5);
+% received = fgetl(bluetooth) %read the requested data
+% %distance = str2double(received)
+% set(handles.edit1, 'String', received);
+
+D = [44
+44
+32
+47
+47
+51
+53
+55
+62
+63
+69
+74
+72
+72
+72
+65
+65
+61
+61
+62
+62
+62
+66
+65
+66
+66
+70
+67
+61
+61
+61
+46
+43
+31
+31
+30
+30
+]
+
+  %D=[1,2,3,4,5]
+   X = [0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+65
+70
+75
+80
+85
+90
+95
+100
+105
+110
+115
+120
+125
+130
+135
+140
+145
+150
+155
+160
+165
+170
+175
+180
+]
+
+%fileName = {'distance.txt'};
+fid = fopen('distance.txt', 'w')
+if fid == -1
+    error('cannot create file')
+end
+fprintf(fid,'%s %s\n','Distance', 'Servo');
+for i=1:numel(D)
+    
+    fprintf(fid,'%g\t', D(i));
+    fprintf(fid,'%g\n', X(i));
+end
+fclose(fid);
+
+azimuth = zeros(1,numel(D));
+x = zeros(1,numel(D)); %x coordinates
+y = zeros(1,numel(D)); % y coordinates
+deg2rad = pi/180;
+%DISTANCE WILL BE READ FROM ROBOT
+%distances = rand(1,180)*10;
+
+% for ser=1:180
+%    % SERVO-MOTOR POSITION WILL BE READ FROM ROBOT
+%     posServoX(ser) = ser; 
+% end
+
+for j=1:numel(D) % servo x
+   azimuth(j) =  X(j)*deg2rad;
+   x(j) = D(j)*cos(azimuth(j));
+   y(j) = D(j)*sin(azimuth(j));
+end
+
+figure(1)
+plot(x,y,'.')
+xlabel('x')
+ylabel('y')
+title("2D Map")
+grid on
+
 
 
 function edit1_Callback(hObject, eventdata, handles)
@@ -292,23 +412,35 @@ deg2rad = pi/180;
 %DISTANCE WILL BE READ FROM ROBOT
 %distances = rand(1,180)*10;
 
-for ser=1:180
+for ser=1:179
    % SERVO-MOTOR POSITION WILL BE READ FROM ROBOT
     posServoX(ser) = ser; 
 end
 
-for j=1:180 % servo x
+for j=1:179 % servo x
    azimuth(j) =  posServoX(j)*deg2rad;
    x(j) = Matrix_2D(j)*cos(azimuth(j));
    y(j) = Matrix_2D(j)*sin(azimuth(j));
 end
 
 figure(1)
-plot(x,y,'.')
+plot(x,y)
 xlabel('x')
 ylabel('y')
 title("2D Map")
 grid on
+
+fid = fopen('distance.txt', 'w')
+if fid == -1
+    error('cannot create file')
+end
+fprintf(fid,'%s %s\n','Distance', 'Servo');
+for i=1:179  
+    fprintf(fid,'%g\t', Matrix_2D(i));
+    fprintf(fid,'%g\n', posServoX(i));
+end
+fclose(fid);
+
 
 % --- Executes on button press in ThreeD_Map.
 function ThreeD_Map_Callback(hObject, eventdata, handles)
