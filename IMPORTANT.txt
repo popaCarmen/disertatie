@@ -10,7 +10,7 @@ ToDO: Adaugat cod pt creare hartii 3D pag 51
 ToDo: Adaugat schema pt conectarea servomotoarelor la arduino -> DONE
 ToDo: Adaugat flowchart pt Bluetooth pag 61 -> DONE
 - Adaugat flowchart si explicatii pt toate aplicatia Arduino
-- Adaugat conexiune Hardware pt toate echipamentele
+- Adaugat conexiune Hardware pt toate echipamentele -> DONE
 - Adaugat concluzii
 - Adaugat anexe: tabele cu valorile 2d si erorilor lor; tabele cu valorile 3d 
 - Aranjare referinte
