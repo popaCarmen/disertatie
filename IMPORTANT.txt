@@ -27,3 +27,7 @@ REZULTATE
 
 prezentare: ppt
 mai multe teste: valoare medie, mediana, abatare
+
+Aliniere formule
+Aliniere text: un tab
+bullet: 0.4 left
