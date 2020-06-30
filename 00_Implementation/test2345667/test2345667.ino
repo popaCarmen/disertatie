@@ -95,10 +95,8 @@ void loop() {
         vertical_Servo.write(90);
         if (finished == false)
         {
-
           if (send_value_flag == false)
           {
-
             if (read_flag == true)
             {
               if (scanning == true)

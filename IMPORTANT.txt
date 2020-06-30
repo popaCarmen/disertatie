@@ -1,5 +1,5 @@
-1. Numerotare tabele
-2. Numerorare formule
+1. Numerotare tabele -> tabel 1 deasupra lor
+2. Numerorare formule -> alineate la dreapta cu referinte
 3. Trebuie adaugata referinta la tabele?
 4. E ok daca iau tabele din diverese surse? 
 
@@ -14,3 +14,16 @@ ToDo: Adaugat flowchart pt Bluetooth pag 61 -> DONE
 - Adaugat concluzii
 - Adaugat anexe: tabele cu valorile 2d si erorilor lor; tabele cu valorile 3d 
 - Aranjare referinte
+
+
+15 iulie
+pag 15-> grupate paragrafe
+fig 13 mai mare
+sa mai compactez
+courier new ->10 (arial 12), fara distante
+descris cadru
+de adaugat schema bloc in implementarea
+REZULTATE
+
+prezentare: ppt
+mai multe teste: valoare medie, mediana, abatare
