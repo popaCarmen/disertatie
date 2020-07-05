@@ -5,37 +5,36 @@
 //#include <SoftwareSerial.h>
 
 //SoftwareSerial Serial3(3,2);
-
-
+#define HEADER  0x59
 
 void getTFminiData(int* distance, int* strength) {
-  static char i = 0;
+  static char index = 0; //index is used for accessing Lidar bytes
   char j = 0;
-  int checksum = 0;
+  int CRC = 0;
   static int rx[9];
   if(Serial3.available())
   { 
     //Serial.println( "tfmini serial available" );
-    rx[i] = Serial3.read();
+    receive[i] = Serial3.read();
              
-    if(rx[0] != 0x59) {
-      i = 0;
-    } else if(i == 1 && rx[1] != 0x59) {
-      i = 0;
-    } else if(i == 8) {
+    if(receive[0] != HEADER) {
+      index = 0;
+    } else if(index == 1 && receive[1] != HEADER) {
+      index = 0;
+    } else if(index == 8) {
       for(j = 0; j < 8; j++) {
-        checksum += rx[j];
+        CRC += receive[j];
       }         
-      if(rx[8] == (checksum % 256)) {
+      if(receive[8] == (CRC % 256)) {
         
-        *distance = rx[2] + rx[3] * 256;
-        *strength = rx[4] + rx[5] * 256;
+        *distance = receive[2] + receive[3] * 256;
+        *strength = receive[4] + receive[5] * 256;
        
       }
-      i = 0;
+      index = 0;
     } else
     {
-      i++;
+      index++;
     }
   } 
 }
